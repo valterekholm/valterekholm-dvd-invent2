@@ -1,6 +1,6 @@
 <?php
 
-
+include "connect.php";
 
 class db
 {
@@ -13,11 +13,11 @@ class db
 	function __construct()
 	{
 		error_log("construct");
-		$connect = $this->read_connection();
-		$this->user = $connect["user"];
-		$this->pass = $connect["password"];
-        $this->db_name = $connect["database"];
-		$host = $connect["host"];
+		echo $_SERVER["DOCUMENT_ROOT"];
+		$this->user = $conn_vals[2];
+		$this->pass = $conn_vals[3];
+        $this->db_name = $conn_vals[1];
+		$host = $conn_vals[0];
 		$options = array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC);
 		$this->conn = new PDO("mysql:host=localhost;dbname=".$this->db_name.";charset=utf8", $this->user, $this->pass, $options);
 		$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //to get error-messages
