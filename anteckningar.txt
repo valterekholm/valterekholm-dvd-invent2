@@ -1,0 +1,1 @@
+SELECT * from `case` LEFT JOIN film ON(`case`.id = film.case_id) LEFT JOIN film_title ON (film.id = film_title.film_id);

@@ -1,0 +1,136 @@
+table{
+    border-collapse: collapse;
+}
+
+td{
+    border: 1px dotted purple;
+}
+
+#tables{
+    max-height: 400px;
+    overflow: auto;
+}
+
+div.add{
+    z-index: 10;
+    background-color: white;
+}
+
+div.case{
+    float: left;
+    width: 80px;
+    height: 110px;
+    background-color: lightgray;
+    border: 1px outset gray;
+    box-shadow: 2px 2px 3px darkgrey;
+    margin: 30px;
+    position: relative;
+    font-family:monospace;
+}
+div#cases{
+    display: inline-block;
+    width: 100%;
+    min-height: 60px;
+    border: 1px dotted gray;
+}
+
+.haveDisc::after{
+    content: " ";
+    position: absolute;
+    height: 40px;
+    width:40px;
+    border: 1px solid black;
+    border-radius: 20px;
+    left: 18px;
+    bottom: 40px;
+    background-color: darkgrey;
+    box-shadow: 3px 3px 5px green;
+}
+.haveDisc::before{
+    content: " ";
+    position: absolute;
+    height: 8px;
+    width:8px;
+    border: 1px solid black;
+    border-radius: 20px;
+    left: 34px;
+    bottom: 56px;
+    background-color: lightgray;
+    z-index: 1;
+}
+
+/*div.case:not(.haveDisk)::after{
+    content: "Ingen disk";
+    display: inline;
+}*/
+#rightSide{
+    width: 20%;
+    height: 100%;
+    display: inline-block;
+}
+#leftSide{
+    width:79%;
+    height:100%;
+    display: inline-block;
+}
+#rightSide, #leftSide{
+    vertical-align: top;
+}
+#caseInfo{
+    display: inline-block;
+    width: 100%;
+    min-height: 50px;
+    max-height: 40%;
+    border: 1px outset gray;
+    background-color: lightgray;
+}
+#caseInfo::before{
+    content: "case info";
+    display: block;
+    text-align: center;
+}
+#includedFilms{
+    display: inline-block;
+    width: 100%;
+    min-height: 50px;
+    max-height: 40%;
+    border: 1px outset gray;
+    background-color: lightgray;
+}
+#includedFilms article{
+    border: 1px dotted gray;
+}
+#includedFilms::before{
+    content: "included films";
+    display: block;
+    text-align: center;
+}
+#adminMenu{
+    display: inline-block;
+    width: 100%;
+    min-height: 50px;
+    max-height: 40%;
+    border: 1px outset gray;
+    background-color: lightgray;
+}
+#adminMenu::before{
+    content: "Admin menu";
+    display: block;
+    text-align: center;
+}
+#adminMenu a{
+    display: inline-block;
+    width: auto;
+    margin:10px;
+}
+#hints{
+    float:right;
+}
+div.hint{
+    border-bottom: 1px dotted black;
+    cursor: pointer;
+}
+
+.row3{
+    text-align: right;
+}
