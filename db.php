@@ -13,7 +13,6 @@ class db
 	function __construct()
 	{
 		error_log("construct");
-		echo $_SERVER["DOCUMENT_ROOT"];
 		$this->user = $conn_vals[2];
 		$this->pass = $conn_vals[3];
         $this->db_name = $conn_vals[1];
