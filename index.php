@@ -14,6 +14,7 @@
 include "db.php";
 include "print_tables.php";
 include "connect.php";
+error_reporting(E_ALL);
 
 $db = new db($conn_vals);
 
