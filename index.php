@@ -13,7 +13,7 @@
 <?php
 include "db.php";
 include "print_tables.php";
-include "connect.php";
+include "connection.php";
 error_reporting(E_ALL);
 
 $db = new db($conn_vals);
