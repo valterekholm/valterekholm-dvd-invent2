@@ -11,7 +11,6 @@ class db
 	function __construct($conn_vals)
 	{
 		echo("construct");
-		print_r($conn_vals);
 		$this->user = $conn_vals[2];
 		$this->pass = $conn_vals[3];
         $this->db_name = $conn_vals[1];
