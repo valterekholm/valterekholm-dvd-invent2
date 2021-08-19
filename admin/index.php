@@ -18,6 +18,7 @@
 
 <div id="leftSide">
 <?php
+error_reporting(E_ALL);
 include "../db.php";
 include "edit.php";
 include "../print_tables.php";
