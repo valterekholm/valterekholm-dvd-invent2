@@ -1,7 +1,5 @@
 <?php
 
-include "connect.php";
-
 class db
 {
 
@@ -10,7 +8,7 @@ class db
 	private $conn;
     private $db_name;
 
-	function __construct()
+	function __construct($conn_vals)
 	{
 		error_log("construct");
 		$this->user = $conn_vals[2];

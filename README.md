@@ -4,3 +4,4 @@ A database system for DVD:s, where DVD:s are packet in moving-boxes, with a many
 The coding is without any libraries or frameworks. So far the UI have swedish english blended.
 
 A file should the user add, "connection.php", that should have the following values (db-related) in a 0-indexed array $conn_vals = ["hostname","database-name","username","password"]
+Correspondingly - in the .gitignore - this file should be added.
