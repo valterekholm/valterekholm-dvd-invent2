@@ -1,19 +1,59 @@
+body{
+    margin: 0;
+}
+
+body, body *{
+    box-sizing: border-box;
+}
+
 table{
     border-collapse: collapse;
 }
 
+h1, h2, h3, h4{
+    font-family: Arial;
+}
+
 td{
     border: 1px dotted purple;
+    padding:3px;
+}
+
+input{
+    margin-bottom: 5px;
+}
+
+body>div{
+    padding:10px;
+}
+
+div#banner{
+    background-color: #111;
+}
+div#banner h1{
+    margin: 0;
+    display: inline-block;
+}
+div#banner a{
+    text-decoration: none;
+}
+input:focus {
+    background-color: lightyellow;
 }
 
 #tables{
     max-height: 400px;
     overflow: auto;
+    background-color: #ddd;
 }
 
 div.add{
     z-index: 10;
-    background-color: white;
+    background-color:#ddd;
+}
+
+div#cases{
+    padding: 20px;
 }
 
 div.case{
@@ -23,9 +63,21 @@ div.case{
     background-color: lightgray;
     border: 1px outset gray;
     box-shadow: 2px 2px 3px darkgrey;
-    margin: 30px;
+    margin: 30px 25px 30px 0;
     position: relative;
     font-family:monospace;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all .1s;
+}
+div.case .row2{
+    position: absolute;
+    bottom: 0;
+}
+#cases div.case:hover{
+    box-shadow: 3px 3px 8px #111;
+    width: 120px;
+    margin-right: 5px;
 }
 div#cases{
     display: inline-block;
@@ -58,6 +110,9 @@ div#cases{
     background-color: lightgray;
     z-index: 1;
 }
+#cases div.case:hover::after, #cases div.case:hover::before{
+    opacity: .3;
+}
 
 /*div.case:not(.haveDisk)::after{
     content: "Ingen disk";
@@ -76,18 +131,27 @@ div#cases{
 #rightSide, #leftSide{
     vertical-align: top;
 }
+#leftSide > div{
+    padding: 0 10px;
+}
 #caseInfo{
     display: inline-block;
     width: 100%;
     min-height: 50px;
     max-height: 40%;
     border: 1px outset gray;
+    border-bottom: none;
     background-color: lightgray;
 }
 #caseInfo::before{
     content: "case info";
     display: block;
     text-align: center;
+    font-family: Arial;
+    margin-bottom: 5px;
+}
+#caseInfo .case{
+    margin-top: 0;
 }
 #includedFilms{
     display: inline-block;
@@ -95,15 +159,25 @@ div#cases{
     min-height: 50px;
     max-height: 40%;
     border: 1px outset gray;
+    border-top: none;
     background-color: lightgray;
+}
+#includedFilms>div{
+    background-color: wheat;
 }
 #includedFilms article{
     border: 1px dotted gray;
+    padding: 4px;
+}
+#includedFilms article button{
+    /*float: right;*/
+    margin-left: 5px;
 }
 #includedFilms::before{
     content: "included films";
     display: block;
     text-align: center;
+    font-family: Arial;
 }
 #adminMenu{
     display: inline-block;
@@ -117,11 +191,17 @@ div#cases{
     content: "Admin menu";
     display: block;
     text-align: center;
+    font-family: Arial;
 }
 #adminMenu a{
     display: inline-block;
     width: auto;
     margin:10px;
+    border: 2px outset gray;
+    border-radius: 3px;
+    padding: 3px;
+    text-decoration: none;
+    font-weight: bold;
 }
 #hints{
     float:right;

@@ -1,4 +1,7 @@
 <!doctype html>
+<?php
+$jsv = date('Y-m-d-s')
+?>
 <html>
     <head>
         <title>DVD-fodral med skivor</title>
@@ -11,10 +14,11 @@
                 display: block;
             }
         </style>
-        <script src="admin.js"></script>
-        <script src="../dvd2.js"></script>
+        <script src="admin.js?v=<?=$jsv?>"></script>
+        <script src="../dvd2.js?v=<?=$jsv?>"></script>
     </head>
 <body>
+    <div id="banner"><a href="<?=$_SERVER["PHP_SELF"]?>"><h1>DVD-invent</h1></a></div>
 
 <div id="leftSide">
 <?php
@@ -22,35 +26,40 @@ error_reporting(E_ALL);
 include "../db.php";
 include "edit.php";
 include "../print_tables.php";
+include "../connection.php";
 $table_name = "`case`";
-$table_name2 = "`film_title`";
-$table_name3 = "`film`";
+$table_name2 = "`film`";
+$table_name3 = "`film_title`";
 
 //reserved js classnames: case
 //reserved js id's : cases
 
-$db = new db();
+$db = new db($conn_vals);
+
 ?>
 <script>
 var fields = []; //table schema, check table `case`
 var field; //tbl field, temp variable
 
-var fields2 = []; //film_title
-var fields3 = []; //film...
+//to store table field names
+var fields3 = []; //film_title
+var fields2 = []; //film...
+
+var tblDesc1 = {};
 
 window.addEventListener("load", function(){
     //formFromFields(fields, ['insert_date', 'id'], document.querySelector('.add'), 'index.php', 'post', 'lägg till fodral');
     loadAll();
     setTimeout(function(){
         if(document.querySelector("input") !== null)
-        document.querySelector("input").focus();
+            document.querySelector("input").focus();
     },1100);
 
 });
 
 
 function loadAll(findCaseId){
-    console.log("loadAll");
+    console.log("loadAll...");
 
     selectedCase = allCases = choosenName = null;
     document.querySelector("#caseInfo").innerHTML = "";
@@ -58,33 +67,40 @@ function loadAll(findCaseId){
     document.querySelector("#adminMenu").innerHTML = "";
 
     getAjax("../ajax_functions.php?all=yes", function(resp){
-            console.log(resp);
+            //console.log(resp);
             var jsonresp = JSON.parse(resp);
             render(jsonresp, document.querySelector("#cases"));
             setTimeout(initCaseClick, 100);
             setTimeout(function(){
-                printAdminMenu(document.querySelector("#adminMenu"));
-                document.querySelector("#alink1").click();
+                printAdminMenu(document.querySelector("#adminMenu"), 500);
+                document.querySelector("#alink1").click();//to start input of new case
             },100);
         }
     );
 
-    if(typeof findCaseId != "undefined"){
+    if(typeof findCaseId !== "undefined"){//after having saved a new case
+        console.log("findCaseId is " + findCaseId);
         //try focus on case in ui
         //TODO extract as function
-        var cases = document.getElementsByClassName("case");
-        var len = cases.length;
+
 
         setTimeout(function(){
+            var cases = document.getElementsByClassName("case");
+            var len = cases.length;
+
+            console.log("function... findCaseId ? (" + findCaseId + ") and len ? (" + len + ")");
             for(var i=0; i<len; i++){
-            var ca_ = cases[i];
-            if(ca_.dataset.id == findCaseId){
-
-                ca_.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+                var ca_ = cases[i];
+                console.log(ca_);
+                if(ca_.dataset.id == findCaseId){
+                    console.log("match for id " + findCaseId);
+                    ca_.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+                }
             }
-        }
-        },500);
-
+        },2000);//long delay to make it come after printAdminMenu(document.querySelector("#adminMenu"), 500);
+    }
+    else{
+        console.log("findCaseId is undefined");
     }
 
     shortMessage("Innehåll har laddats om");
@@ -92,16 +108,17 @@ function loadAll(findCaseId){
 
 
 </script>
-
+<script>
+    /*use_table_description*/
 <?php
 
 //$sql_desc = "DESCRIBE $table_name";
 //$res_desc = $db->select_query($sql_desc);
 use_table_description($db, $table_name, "fields");
-use_table_description($db, $table_name2, "fields2");
 use_table_description($db, $table_name3, "fields3");
+use_table_description($db, $table_name2, "fields2");
 ?>
-
+</script>
 <?php
 
 if(!empty($_GET["id"]) && empty($_GET["delete"]) && !empty($_GET["table"])){ //edit
@@ -181,8 +198,9 @@ if(empty($_POST["id"]) && !empty($_POST["c_short_name"]) && !empty($_POST["locat
 
     if($insert_count>0){
         //echo "<p>Row inserted, please reload <a href='index.php'>here</a></p>";
-        echo "<div style='position: absolute; left: 40%; width:20%'>Insert ok <button style='position: relative; left: -50%' onclick='loadAll($last_insert_id);deleteMe(this.parentNode)'>loadAll</button></div>";
+        //echo "<div style='position: absolute; left: 40%; width:20%'>Insert ok <button style='position: relative; left: -50%' onclick='loadAll($last_insert_id);deleteMe(this.parentNode)'>loadAll</button></div>";
         //header("refresh: 0");
+        echo "<script>reloadMessage($last_insert_id)</script>";
     }
     else{
         echo "insert 0";
@@ -203,7 +221,7 @@ if(empty($_POST["id"]) && !empty($_POST["name"])){
         $film_id = $_POST["film_id"];
     }
     $values[]=$film_id;
-    $sql_add_name = "INSERT INTO " . $db->get_db_name() . ".$table_name2 (name, film_id) VALUES (?, ?)";
+    $sql_add_name = "INSERT INTO " . $db->get_db_name() . ".$table_name3 (name, film_id) VALUES (?, ?)";
 
     echo $sql_add_name;
 
@@ -226,7 +244,7 @@ if(empty($_POST["id"]) && !empty($_POST["f_short_name"])){
 
     $values[]=$name;
 
-    $sql_add_film = "INSERT INTO " . $db->get_db_name() . ".$table_name3 (f_short_name) VALUES (?)";
+    $sql_add_film = "INSERT INTO " . $db->get_db_name() . ".$table_name2 (f_short_name) VALUES (?)";
 
 
     $insert_count = $db->insert_query($sql_add_film, $values, false);
@@ -271,13 +289,6 @@ $rows_dvds = $res_dvds->fetchAll();
 
 ?>
 <div id="tables">
-
-    <?php
-
-    //print_table_menu("#tables");
-
-    //print_rows_table_admin($rows_dvds, true, array(), "DVD-cases");
-?>
 
 </div>
 

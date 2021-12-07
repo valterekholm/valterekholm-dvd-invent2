@@ -10,7 +10,6 @@ class db
 
 	function __construct($conn_vals)
 	{
-		echo "db";
 		$this->user = $conn_vals[2];
 		$this->pass = $conn_vals[3];
         $this->db_name = $conn_vals[1];
@@ -40,11 +39,44 @@ class db
 			error_log("true");
 			$sql = strtolower($sql);
 		} else error_log("false");
+		error_log($sql);
 
 		$stmt = $this->conn->prepare($sql);
-		$stmt = $this->conn->query($sql);
+		$stmt = $this->conn->query($sql);//note: PDO::query don't use placeholders
 
 		return $stmt;
+	}
+
+	//$params example: array(":search_string", $string, PDO::PARAM_STR);
+	function select_query2($sql, $params, $force_lower_case = true)
+	{
+		error_log("select_query2, med $sql   ...and values");
+		//error_log(print_r($values, true));
+		if ($force_lower_case) {
+			error_log("lower_case true");
+			$sql = strtolower($sql);
+		} else error_log("lower_case false");
+		error_log($sql);
+
+		$stmt = $this->conn->prepare($sql);
+		foreach($params as $param){
+			//array 0 1 2
+			$stmt->bindParam($param[0], $param[1], $param[2]);
+			error_log($param[0].$param[1].$param[2]);
+		}
+		
+		$stmt->execute();
+
+		//$row0 = $stmt->fetch();
+		//error_log(print_r($row0, true));
+
+		//error_log(print_r($stmt, true));
+		// select a particular user by id
+		//$stmt = $pdo->prepare("SELECT * FROM users WHERE id=?");
+		//$stmt->execute([$id]); 
+		//$user = $stmt->fetch();
+
+		return $stmt->fetchAll();
 	}
 
 	//sql - a query with positional placeholders "?,?,?"
@@ -152,5 +184,9 @@ class db
 
 		return array_combine($keys,$vals);
 
+	}
+
+	function quote($string){
+		return $this->conn->quote($string);
 	}
 }

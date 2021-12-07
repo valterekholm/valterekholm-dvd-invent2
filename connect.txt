@@ -1,0 +1,4 @@
+localhost
+dvd_invent
+root
+

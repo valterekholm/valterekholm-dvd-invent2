@@ -2,6 +2,8 @@
 
 function print_rows_table($rows, $html_table = true, $attr = array(), $ignore_field = array("id")){
 
+    $use_ob = false; //order_by_links
+
     if(count($rows) == 0){
         echo "No rows in result";
         return;
@@ -31,7 +33,7 @@ function print_rows_table($rows, $html_table = true, $attr = array(), $ignore_fi
     $ignore_index = array();
     foreach($rows as $row){
         echo "<$row_>";
-        if($count == 0){
+        if($count == 0){ //skriv ut rubriker
             $count_index = 0;
             foreach($row as $key=>$value){
                 
@@ -40,7 +42,10 @@ function print_rows_table($rows, $html_table = true, $attr = array(), $ignore_fi
                     $ignore_index[] = $count_index;
                 }
                 else{
-                    echo "<$hcell_>$key</$hcell_>";
+                    if($use_ob)
+                        echo "<$hcell_><a href='".$_SERVER["PHP_SELF"]."?orderby=$key'>$key</a></$hcell_>";
+                    else
+                        echo "<$hcell_>$key</$hcell_>";
                 }
 
                 $count_index++;
@@ -64,6 +69,8 @@ function print_rows_table($rows, $html_table = true, $attr = array(), $ignore_fi
 
         echo "</$row_>";
     }
+    $count--;
+    echo "<$row_><$hcell_>rows: $count</$hcell_></$row_>";
     echo "</$table_>";
 }
 
