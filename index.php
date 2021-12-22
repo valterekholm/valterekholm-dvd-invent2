@@ -3,13 +3,25 @@
     <head>
         <title>DVD-fodral med skivor</title>
         <style>
+            table{
+                table-layout: fixed;
+                width: 100%;
+            }
+            th:first-child{
+                width: 70%;
+            }
             table, td{
                 border: 1px dotted gray;
             }
+            td{
+                word-wrap: break-word;
+            }
         </style>
-</head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
 <body>
-    <pre>
+    <!--pre-->
 <?php
 include "db.php";
 include "print_tables.php";
@@ -27,7 +39,7 @@ else{
     $sql_orderby = " ORDER BY filmnamn";
 }
 
-$sql_dvds = "SELECT GROUP_CONCAT(name separator ' / ') as filmnamn FROM `case` c JOIN case_film cf ON (c.id = cf.case_id) JOIN film f ON (cf.film_id = f.id) JOIN film_title ft ON (f.id = ft.film_id) GROUP BY c.id$sql_orderby";
+$sql_dvds = "SELECT GROUP_CONCAT(name separator ' / ') as filmnamn, c_short_name fodralbeteckning FROM `case` c JOIN case_film cf ON (c.id = cf.case_id) JOIN film f ON (cf.film_id = f.id) JOIN film_title ft ON (f.id = ft.film_id) GROUP BY c.id$sql_orderby";
             //todo: make ao that only case first dvd (if more than one) is listed - so not "group by ft.id" (solved using f.id
 
 //"SELECT DISTINCT COALESCE(name, `case`.`c_short_name`) 'filmnamn' FROM `case` LEFT JOIN `case_film` ON `case_film`.`case_id` = `case`.`id` LEFT JOIN `film` ON `case_film`.`film_id` = `film`.`id` LEFT JOIN film_title ON film.id = film_title.film_id";
@@ -36,11 +48,11 @@ $res_dvds = $db->select_query($sql_dvds);
 $rows_dvds = $res_dvds->fetchAll();
 
 
-print_rows_table($rows_dvds, true, array(), array("id"));
+print_rows_table($rows_dvds, true, array(), array(""));
 
 echo "printed " . date("Y-m-d");
 
 ?>
-</pre>
+<!--/pre--> <!-- 'pre' disables the word-wrap css function -->
 </body>
 </html>

@@ -17,6 +17,7 @@ function formFromFields(_fields, ignore, target, action, method, title, descript
     var fo = document.createElement("form");
     fo.action = action;
     fo.method = method;
+    fo.id = "form1";
 
     fo.innerHTML = "<h1>" + title + "</h1>"; //Initial assign...
 
@@ -86,6 +87,7 @@ function ajaxFormFromFields(_fields, ignore, target, action, method, title, desc
     var fo = document.createElement("form");
     fo.action = action;
     fo.method = method;
+    fo.id = "form1";
 
     //prepare for ajax
 
@@ -307,6 +309,7 @@ function updateIncludedFilms(selectedCase){
     target.appendChild(films_);
 }
 
+//this 2:nd version based on a new variant of the "get_all" query
 function updateIncludedFilms2(includedFilms){ //takes an array that should refer to one case and one or more films...
     var target = document.querySelector("#includedFilms");
     target.innerHTML = "";
@@ -316,7 +319,7 @@ function updateIncludedFilms2(includedFilms){ //takes an array that should refer
 
     films.forEach(elem => {
         //make filmlabels list
-        if(elem.fid && elem.ftid){
+        if(elem.fid /*&& elem.ftid*/){
         var f = document.createElement("article");
         f.innerHTML = elem.name;
         films_.appendChild(f);
@@ -485,13 +488,13 @@ function printAdminMenu(target, delay){
 
     var link4 = document.createElement("a");
     link4.href = "#";
+    link4.innerHTML = "filmer & namn";
 
     link4.id='alink4';
     link4.addEventListener("click", function(ev){
         ev.preventDefault();
         showFilmAndNames(document.querySelector("#tables"));
     });
-    link4.innerHTML = "filmer & namn";
 
     link4.title="Filmer med kopplade namn ger en sammanfattande bild av filmer / filmnamn"
 
