@@ -130,6 +130,7 @@ function ajaxFormFromFields(_fields, ignore, target, action, method, title, desc
     var subm = document.createElement("input");
     subm.type = "submit";
     subm.value = "Ok ajax";
+    subm.id = "ajax_submit_button";
     fo.appendChild(subm);
     target.appendChild(fo);
 
@@ -157,6 +158,13 @@ function ajaxFormFromFields(_fields, ignore, target, action, method, title, desc
 
     fo.addEventListener("submit", function(ev){
         ev.preventDefault();//so use ajax
+
+        //disable submit button
+        var sb = document.querySelector("#ajax_submit_button");
+
+        if(sb){
+            sb.disabled = true;
+        }
 
         if(this.method == "post")
         if (this.elements["c_short_name"]){

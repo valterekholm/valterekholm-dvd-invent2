@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Värd: 127.0.0.1
--- Tid vid skapande: 07 dec 2021 kl 20:01
+-- Tid vid skapande: 19 jan 2022 kl 02:55
 -- Serverversion: 10.4.18-MariaDB
 -- PHP-version: 7.3.27
 
@@ -72,6 +72,21 @@ CREATE TABLE `film_title` (
   `film_id` int(11) NOT NULL,
   `insert_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='titles of film in certain language';
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `inventory_info`
+--
+
+CREATE TABLE `inventory_info` (
+  `created_date` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Time for insert into table just',
+  `inventory_location` varchar(100) NOT NULL,
+  `inventory_image_file` varchar(111) NOT NULL,
+  `images_as_base64` int(11) NOT NULL DEFAULT 1 COMMENT '0=no, 1=yes',
+  `inventory_name` varchar(100) NOT NULL,
+  `inventory_contact_info` varchar(200) NOT NULL COMMENT 'name, phone etc.'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Index för dumpade tabeller

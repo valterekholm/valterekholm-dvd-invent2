@@ -3,6 +3,8 @@ include "db.php";
 include "connection.php";
 $db = new db($conn_vals);
 
+$test_sleep_value = 0; //use to test delayments effect
+
 
 if(!empty($_GET["all"])){ //cases
     //query "dvd1"
@@ -45,6 +47,8 @@ if(!empty($_GET["all"])){ //cases
 
     error_log(count($rows_dvds));
 
+    sleep($test_sleep_value);
+
     echo json_encode($rows_dvds);
 
 }
@@ -71,19 +75,6 @@ if(!empty($_GET["case_info"]) && !empty($_GET["case_id"])){ //case with all it's
     WHERE c.id = $case_id
     GROUP BY(f.id) ORDER BY c.id";
 
-    //Denna query med group by c.id ger 'rader' med sammanslagning av flera filmtitlar kallat 'name'
-        //Detta i sin tur passar för uppvisningen av "fodral" med alternativa titlar separerade av "/"
-        //Det passar dock inte för case info rutan, där fodral med flera filmer får dessa sammanslagna till en enda film
-
-    //liknande med group by f.id
-
-    //Query:n kan dock köras med group by ft.id, då blir uppvisningen av fodral något fel, men case info rutan blir rätt;
-    //man får nu alla olika filmer/skivor som sparata rutor som kan tas bort
-    //dock slås separata fodral av samma film ihop på oönskat sätt
-
-    //"SELECT c.id, c.c_short_name, f.f_short_name, c.location, f.id as fid, ft.id as ftid, ft.name from `case` c LEFT JOIN case_film cf ON (c.id = cf.case_id) LEFT JOIN film f ON(cf.film_id = f.id) LEFT JOIN film_title ft ON (f.id = ft.film_id)";
-
-    //Denna 
     error_log($sql_dvds);
 
     $res_dvds = $db->select_query($sql_dvds);

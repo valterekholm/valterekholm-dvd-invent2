@@ -7,7 +7,10 @@ function getAjax(url, success) {
 	var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
 	xhr.open('GET', url);
 	xhr.onreadystatechange = function() {
-		if (xhr.readyState>3 && xhr.status==200) success(xhr.responseText);
+		if (xhr.readyState>3 && xhr.status==200){
+            success(xhr.responseText);
+        }
+        
 		else if (xhr.readyState>3 && xhr.status>=500){ console.log("Server error (" + xhr.responseText + ")") }
 		else if (xhr.readyState>3 && xhr.status>=400){ console.log("Client error (" + xhr.responseText + ")") }
 	};

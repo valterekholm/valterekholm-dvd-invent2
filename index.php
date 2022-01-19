@@ -28,6 +28,8 @@ include "print_tables.php";
 include "connection.php";
 error_reporting(E_ALL);
 
+$media_files_dir = "media";
+
 $db = new db($conn_vals);
 
 $sql_orderby = "";
@@ -50,9 +52,45 @@ $rows_dvds = $res_dvds->fetchAll();
 
 print_rows_table($rows_dvds, true, array(), array(""));
 
-echo "printed " . date("Y-m-d");
+echo "printed " . date("Y-m-d") . "<br>";
+
+?>
+
+<?php
+//info
+
+$sql_inventory_info = "SELECT * FROM `inventory_info`";
+
+$res_inventory_info = $db->select_query($sql_inventory_info);
+
+$row_inventory_info = $res_inventory_info->fetch();
+
+echo "Contact info:" . $row_inventory_info["inventory_contact_info"];
+echo "<br>";
+$filename = $row_inventory_info["inventory_image_file"];
+
+printBase64Image($media_files_dir, $filename);
+
 
 ?>
 <!--/pre--> <!-- 'pre' disables the word-wrap css function -->
+
+<!-- Start of SimpleHitCounter Code -->
+<div align="center"><a href="http://www.simplehitcounter.com" target="_blank"><img src="http://simplehitcounter.com/hit.php?uid=348135516&f=16777215&b=0" border="0" height="18" width="83" alt="web counter"></a><br><a href="http://www.simplehitcounter.com" target="_blank" style="text-decoration:none;">web counter</a></div>
+<!-- End of SimpleHitCounter Code -->
+
+
 </body>
 </html>
+
+<?php
+function printBase64Image($media_files_directory, $image_file_name){
+    $path = "$media_files_directory/$image_file_name";
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $data = file_get_contents($path);
+    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+    
+    echo "<image src='$base64'><br>";
+    echo "<i>Inventory image file: $image_file_name</i>";
+    echo "<br>";
+}
