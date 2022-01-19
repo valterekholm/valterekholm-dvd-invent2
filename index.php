@@ -68,8 +68,14 @@ $row_inventory_info = $res_inventory_info->fetch();
 echo "Contact info:" . $row_inventory_info["inventory_contact_info"];
 echo "<br>";
 $filename = $row_inventory_info["inventory_image_file"];
+$useBase64 = $row_inventory_info["images_as_base64"];
 
-printBase64Image($media_files_dir, $filename);
+if($useBase64 == 1){
+    printBase64Image($media_files_dir, $filename);
+}
+else{
+    echo "<img src='$media_files_dir/$filename'><br>";
+}
 
 
 ?>
