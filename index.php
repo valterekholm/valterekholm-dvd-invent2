@@ -90,7 +90,7 @@ function printBase64Image($media_files_directory, $image_file_name){
     $data = file_get_contents($path);
     $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
     
-    echo "<image src='$base64'><br>";
+    echo "<img src='$base64'><br>";
     echo "<i>Inventory image file: $image_file_name</i>";
     echo "<br>";
 }
