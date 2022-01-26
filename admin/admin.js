@@ -490,7 +490,7 @@ function printAdminMenu(target, delay){
         echoTableAjax(document.querySelector("#tables"), "film_title", "name");
 
         setTimeout(function(){
-            ajaxFormFromFields(fields3, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'lägg till namn', 'Det är enklast att lägga in filmer via "fodral"');
+            ajaxFormFromFields(fields3, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'lägg till namn', 'Lägg till filmtiteln på ett annat språk, välj sen existerande namnet i rull-listan. För vanlig registrering är det enklast att lägga in filmer via "fodral" (case)');
         }, delay);
 
     });
