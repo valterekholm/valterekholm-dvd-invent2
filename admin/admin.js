@@ -413,7 +413,7 @@ function addNameAjaxSearch(elem){
 
         getAjax("../ajax_functions.php?names=yes&string=" + val, function(resp){
             console.log(resp);
-            presentHints(document.querySelector("#hints"), JSON.parse(resp))
+            presentHints(document.querySelector("#hints"), JSON.parse(resp));
         });
     });
 }
@@ -430,6 +430,8 @@ function presentHints(target, hints){
         hint.addEventListener("click", function(){
             document.querySelector("#film_name").value = hint.innerHTML;
             choosenName = hint.innerHTML;
+            var fna = document.querySelector("#film_name");
+            if(fna) fna.focus();
         })
     });
 }
