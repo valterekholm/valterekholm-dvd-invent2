@@ -145,7 +145,7 @@ function render(resp, target){
 
 //title is optional param
 function renderCase(_case, target, title){
-    console.log(_case);
+    //console.log(_case);
     var cas = document.createElement("div");
     cas.className = "case";
 
