@@ -152,9 +152,9 @@ function ajaxFormFromFields(_fields, ignore, target, action, method, title, desc
         target.scrollIntoView({behavior: "smooth", block: "center"});
     },500);
 
-    setTimeout(function(){
+    /*setTimeout(function(){
         target.scrollIntoView({behavior: "smooth", block: "center"});
-    });
+    });*/ //2022-02-03 commented out in lack of delay milli-sec
 
     fo.addEventListener("submit", function(ev){
         ev.preventDefault();//so use ajax
@@ -197,7 +197,7 @@ function ajaxFormFromFields(_fields, ignore, target, action, method, title, desc
 function inputFromField(field){
     var fieldT = field["Type"];
     //alert(fieldT);
-    var fieldT3 = fieldT.substring(0,3);
+    var fieldT3 = fieldT.substring(0,3); //getting first 3 letters only
     //alert(fieldT3);
 
     var maxL = false;
@@ -440,7 +440,6 @@ function printAdminMenu(target, delay){
     target.innerHTML = "";
     //target.appendChild(document.createTextNode("Admin"));
     
-
     var link1 = document.createElement("a");
     link1.href = "#";
     link1.innerHTML = "fodral";
@@ -456,7 +455,7 @@ function printAdminMenu(target, delay){
         echoTableAjax(document.querySelector("#tables"), "case");
 
         setTimeout(function(){
-            ajaxFormFromFields(fields, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'Lägg till fodral', 'Första bokstav bör ej vara siffra');
+            ajaxFormFromFields(fields, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'Lägg till fodral');
         }, delay);
 
     });
@@ -473,6 +472,7 @@ function printAdminMenu(target, delay){
         echoTableAjax(document.querySelector("#tables"), "film");
 
         setTimeout(function(){
+            //fields2 is set by the use_table_description function
             formFromFields(fields2, ['insert_date', 'id'], document.querySelector('.add'), 'index.php', 'post', 'lägg till film');
         }, 1000);
 
@@ -507,6 +507,9 @@ function printAdminMenu(target, delay){
     });
 
     link4.title="Filmer med kopplade namn ger en sammanfattande bild av filmer / filmnamn"
+
+
+    //TODO: link5; to offer a fast way to insert case/film/film_title, initially for case with one film in it, asking "Enter film title"
 
 
     target.appendChild(link1);

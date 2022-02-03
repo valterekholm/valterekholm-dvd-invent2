@@ -52,6 +52,7 @@ function add_form($fields, $ignore_field = array("insert_date", "id")){
 }
 
 //Renders javascript
+//query requires access to table `information_schema`
 function use_table_description($db, $table_name, $js_elem){
     //TODO: use js short style initialize of array
 
@@ -65,7 +66,7 @@ function use_table_description($db, $table_name, $js_elem){
     $tbl_name_stripped = trim($table_name, '`');
 
     $sql_find_ref1 = "select * from KEY_COLUMN_USAGE kcu where kcu.REFERENCED_TABLE_SCHEMA = 'dvd_invent' and kcu.TABLE_NAME = '$tbl_name_stripped' LIMIT 1";
-    //echo "//$sql_find_ref1\n";
+    echo "//$sql_find_ref1\n";
     $result_ref = $db2->select_query($sql_find_ref1);
     $rows_ref = $result_ref->fetchAll();
 
@@ -121,4 +122,8 @@ function use_table_description($db, $table_name, $js_elem){
     echo "$js_elem = $rows;\n";
 
     //echo "\n" . json_encode($rows_describe) . "\n";
+}
+
+function admin_message($message){
+    echo "<p class='admin_message'>$message</p>";
 }

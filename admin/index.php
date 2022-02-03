@@ -13,9 +13,17 @@ $jsv = date('Y-m-d-s')
             label, input[type="submit"]{
                 display: block;
             }
+            .admin_message{
+                position: fixed;
+                height: 100px;
+                background-color: #cfc;
+                width: 100%;
+                padding: 20px;
+            }
         </style>
         <script src="admin.js?v=<?=$jsv?>"></script>
         <script src="../dvd2.js?v=<?=$jsv?>"></script>
+        <script src="database_structure.js?v=<?=$jsv?>"></script>
     </head>
 <body>
     <div id="banner"><a href="<?=$_SERVER["PHP_SELF"]?>"><h1>DVD-invent</h1></a></div>
@@ -73,7 +81,14 @@ function loadAll(findCaseId){
             setTimeout(initCaseClick, 100);
             setTimeout(function(){
                 printAdminMenu(document.querySelector("#adminMenu"), 500);
-                document.querySelector("#alink1").click();//to start input of new case
+                <?php if(empty($_GET)){
+                    //TODO: abstract out so code gets more beautyfull
+                    ?>
+
+                document.querySelector("#alink1").click();//adminlink 1, 'case', to start input of new case
+                    <?php
+                }
+                ?>
             },100);
         }
     );
@@ -87,6 +102,7 @@ function loadAll(findCaseId){
         setTimeout(function(){
             var cases = document.getElementsByClassName("case");
             var len = cases.length;
+            console.log(len);
 
             console.log("function... findCaseId ? (" + findCaseId + ") and len ? (" + len + ")");
             for(var i=0; i<len; i++){
@@ -118,6 +134,11 @@ use_table_description($db, $table_name, "fields");
 use_table_description($db, $table_name3, "fields3");
 use_table_description($db, $table_name2, "fields2");
 ?>
+
+
+//console.log(fields_1);
+//console.log(fields_2);//these could be used if "use_table_description" can't be used
+//console.log(fields_3);
 </script>
 <?php
 
@@ -170,7 +191,7 @@ if(!empty($_POST["id"]) && !empty($_POST["table"])){ //update
     print_r($values);
     $row_count = $db->update_query($sql_update, $values, false);
     if($row_count > 0){
-        echo "<p>Row was updated, please reload <a href='index.php'>here</a>";
+        admin_message("Row was updated, please reload <a href='index.php'>here</a>");
         //header("refresh: 0");
     }
     else{
@@ -197,9 +218,6 @@ if(empty($_POST["id"]) && !empty($_POST["c_short_name"]) && !empty($_POST["locat
     $last_insert_id = $db->getLastInsertId();
 
     if($insert_count>0){
-        //echo "<p>Row inserted, please reload <a href='index.php'>here</a></p>";
-        //echo "<div style='position: absolute; left: 40%; width:20%'>Insert ok <button style='position: relative; left: -50%' onclick='loadAll($last_insert_id);deleteMe(this.parentNode)'>loadAll</button></div>";
-        //header("refresh: 0");
         echo "<script>reloadMessage($last_insert_id)</script>";
     }
     else{
@@ -228,7 +246,6 @@ if(empty($_POST["id"]) && !empty($_POST["name"])){
     $insert_count = $db->insert_query($sql_add_name, $values, false);
 
     if($insert_count>0){
-        //echo "<p>Row inserted, please reload <a href='index.php'>here</a></p>";
         header("refresh: 0");
     }
     else{
@@ -250,7 +267,7 @@ if(empty($_POST["id"]) && !empty($_POST["f_short_name"])){
     $insert_count = $db->insert_query($sql_add_film, $values, false);
 
     if($insert_count>0){
-        echo "<p>Row inserted, please reload <a href='index.php'>here</a></p>";
+        admin_message("Row inserted, please reload <a href='index.php'>here</a>");
         //header("refresh: 0");
     }
     else{
@@ -274,7 +291,7 @@ if(!empty($_GET["delete"])){
             $row_count =$db->update_query($sql_del, $values, false);
             echo "Delete row count: $row_count";
             if($row_count > 0){
-                echo "<p>Row was deleted, please reload <a href='index.php'>here</a></p>";
+                admin_message("Row was deleted, please reload <a href='index.php'>here</a>");
                 //header("refresh: 0");
                 header("Location: {$_SERVER['PHP_SELF']}");
             }
