@@ -303,7 +303,13 @@ if(!empty($_GET["get_select"]) && !empty($_GET["ref_table"]) && !empty($_GET["re
     $ref_table = $_GET["ref_table"];
     $ref_field = $_GET["ref_field"];
 
-    $sql_select = "SELECT * FROM `$ref_table`";
+    $order_by = "";
+    if(!empty($_GET["orderalphabet"])){
+        $order_by = " ORDER BY " . $_GET["orderalphabet"];
+
+    }
+
+    $sql_select = "SELECT * FROM `$ref_table`$order_by";
     $res_select = $db->select_query($sql_select);
     $rows_select = $res_select->fetchAll();
 

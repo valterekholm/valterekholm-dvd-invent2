@@ -82,7 +82,7 @@ function formFromFields(_fields, ignore, target, action, method, title, descript
 }
 
 //TODO: make like previous but with ajax
-function ajaxFormFromFields(_fields, ignore, target, action, method, title, description){
+function ajaxFormFromFields(_fields, ignore, target, action, method, title, description, orderByAlpha){
     target.innerHTML = "";
     var fo = document.createElement("form");
     fo.action = action;
@@ -97,6 +97,11 @@ function ajaxFormFromFields(_fields, ignore, target, action, method, title, desc
     if(typeof description !== "undefined"){
         desc = description;
         fo.innerHTML += "<p class='description'>" + desc + "</p>";
+    }
+
+    var orderb = false;
+    if(typeof orderByAlpha !== "undefined"){
+        orderb = orderByAlpha;
     }
 
     if(!Array.isArray(ignore)){
@@ -141,7 +146,13 @@ function ajaxFormFromFields(_fields, ignore, target, action, method, title, desc
             var ftbl = fk.dataset.referecedTable;
             var ffld = fk.dataset.referencedField;
 
-            getAjax("../ajax_functions.php?get_select=yes&ref_table=" + ftbl + "&ref_field=" + ffld, function(resp){
+            var queryString = "../ajax_functions.php?get_select=yes&ref_table=" + ftbl + "&ref_field=" + ffld;
+
+            if(orderb){
+                queryString += "&orderalphabet="+orderb;
+            }
+
+            getAjax(queryString, function(resp){
                 console.log(resp);
                 var data = JSON.parse(resp);
                 console.log(data);
@@ -516,7 +527,7 @@ function printAdminMenu(target, delay){
         echoTableAjax(document.querySelector("#tables"), "film_title", "name");
 
         setTimeout(function(){
-            ajaxFormFromFields(fields3, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'lägg till namn', 'Lägg till filmtiteln på ett annat språk, välj sen existerande namnet i rull-listan. För vanlig registrering är det enklast att lägga in filmer via "fodral" (case)');
+            ajaxFormFromFields(fields3, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'lägg till namn', 'Lägg till filmtiteln på ett annat språk, välj sen existerande namnet i rull-listan. För vanlig registrering är det enklast att lägga in filmer via "fodral" (case)', 'f_short_name');
         }, delay);
 
     });
