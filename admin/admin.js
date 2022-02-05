@@ -258,6 +258,7 @@ function extractStringMaxLen(type){
 }
 
 //When clicking on a 'case'
+//Makes a case handling area appear
 //TODO: get case info again with ajax
 function updateCaseInfo(index){
     var target = document.querySelector("#caseInfo");
@@ -274,17 +275,21 @@ function updateCaseInfo(index){
         var includedFilms = JSON.parse(resp); //should get array with objects that each have "name"
         console.log(includedFilms);
         updateIncludedFilms2(includedFilms);
+
     });
 
 
     renderCase(selectedCase, target);
     renderAddNameForm(target, selectedCase.id, "Whole film name");
 
+    //also offer delete case
+    target.appendChild(offerDeleteCase(caseId));
+
     target.scrollIntoView({behavior: "smooth"});//, block: "end", inline: "nearest"
 
     //updateIncludedFilms(selectedCase);
 }
-
+/*
 function updateIncludedFilms(selectedCase){
     var target = document.querySelector("#includedFilms");
     target.innerHTML = "";
@@ -315,7 +320,7 @@ function updateIncludedFilms(selectedCase){
         f.appendChild(btn);
     });
     target.appendChild(films_);
-}
+}*/
 
 //this 2:nd version based on a new variant of the "get_all" query
 function updateIncludedFilms2(includedFilms){ //takes an array that should refer to one case and one or more films...
@@ -352,6 +357,7 @@ function updateIncludedFilms2(includedFilms){ //takes an array that should refer
     target.appendChild(films_);
 }
 
+//the adding of film/disc to a case - 'dialog'
 function makeAddFilmButton(text){
     var btn = document.createElement("input");
     btn.type = "button";
@@ -368,8 +374,28 @@ function makeAddFilmButton(text){
         postAjax("../ajax_functions.php", filmInfo, function(resp){handleJsonResp(resp)});
     }
     return btn;
-
 }
+
+function offerDeleteCase(caseId){
+    console.log("offerDeleteCase: " + caseId);
+    var deleteCaseBtn = document.createElement("button");
+    deleteCaseBtn.innerHTML = "Delete";
+    deleteCaseBtn.id = "deleteCaseButton";
+    deleteCaseBtn.className = "bottom_right";
+
+
+    deleteCaseBtn.addEventListener("click", function(){
+        getAjax("../ajax_functions.php?delete_case=yes&case_id=" + caseId,
+        function(resp){
+            handleJsonResp(resp);
+            loadAll();
+        }
+    );
+    });
+    return deleteCaseBtn;
+}
+
+
 
 function renderAddNameForm(target, caseid, placeholder){
     var f = document.createElement("form");

@@ -6,6 +6,7 @@ $jsv = date('Y-m-d-s')
     <head>
         <title>DVD-fodral med skivor</title>
         <link rel="stylesheet" href="../dvd2.css" />
+        <link rel="stylesheet" href="dvdInventAdmin.css" />
         <style>
             .hide_first_col td:first-child, .hide_first_col th:first-child{
                 display: none;

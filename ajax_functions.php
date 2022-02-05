@@ -277,6 +277,28 @@ if(!empty($_GET["disconnect"]) && !empty($_GET["case"]) && !empty($_GET["film"])
     }
 }
 
+//delete case
+if(
+    !empty($_GET["delete_case"])
+    &&
+    !empty($_GET["case_id"])
+    ){
+    //error_log("delete case: " . $GET["case_id"]);
+    
+    $del_id = $_GET["case_id"];
+    //echo "delete case $del_id";
+
+    $sql_del = "DELETE FROM " . $db->get_db_name() . ".`case` WHERE id = ?";
+    $values = array($del_id);
+    $row_count =$db->update_query($sql_del, $values, false);
+    if($row_count > 0){
+        echo makeJsonRespons(true,"Delete case ok", $row_count);
+    }
+    else{
+        echo makeJsonRespons(false,"No case deleted", $row_count);
+    }
+}
+
 if(!empty($_GET["get_select"]) && !empty($_GET["ref_table"]) && !empty($_GET["ref_field"])){
     $ref_table = $_GET["ref_table"];
     $ref_field = $_GET["ref_field"];

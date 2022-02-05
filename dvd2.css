@@ -142,6 +142,7 @@ div#cases{
     border: 1px outset gray;
     border-bottom: none;
     background-color: lightgray;
+    position: relative;
 }
 #caseInfo::before{
     content: "case info";
@@ -213,4 +214,10 @@ div.hint{
 
 .row3{
     text-align: right;
+}
+
+.bottom_right{
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
