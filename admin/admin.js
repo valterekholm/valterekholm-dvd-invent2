@@ -250,6 +250,7 @@ function inputFromField(field){
     return inp;
 }
 
+//tested with mysql/mariadb
 function extractStringMaxLen(type){
     console.log("extractStringMaxLen , " + type);
     if(type.indexOf("(")<0 || type.indexOf(")")<0){
@@ -265,7 +266,23 @@ function extractStringMaxLen(type){
 
 
     var len  = type.substring(start+1,end);
+    console.log("len: " + len);
     return parseInt(len);
+}
+
+//planned to be used with help of a static textfile (js-file) 'database_structure', supplied by root admin/developer
+function DB_get1VarcharLength(fields){
+    console.log("DB_get1VarcharLength");
+    console.log(fields);
+    var found = null;
+    fields.forEach(element => {
+        if(element.Type.substring(0,4) == "varc"){
+            var maxLen = extractStringMaxLen(element.Type);
+            found = maxLen;
+            console.log("found!");
+        }
+    });
+    return found;
 }
 
 //When clicking on a 'case'
@@ -289,7 +306,6 @@ function updateCaseInfo(index){
 
     });
 
-
     renderCase(selectedCase, target);
     renderAddNameForm(target, selectedCase.id, "Whole film name");
 
@@ -300,38 +316,6 @@ function updateCaseInfo(index){
 
     //updateIncludedFilms(selectedCase);
 }
-/*
-function updateIncludedFilms(selectedCase){
-    var target = document.querySelector("#includedFilms");
-    target.innerHTML = "";
-    let films = selectedCase.films;
-
-    let films_ = document.createElement("div");
-
-    films.forEach(elem => {
-        //make filmlabels list
-        var f = document.createElement("article");
-        f.innerHTML = elem.name;
-        films_.appendChild(f);
-
-
-        //disconnect
-        var btn = document.createElement("button");
-        btn.addEventListener("click", function(){
-            var ca = selectedCase["id"];
-            var fi = elem["fid"];
-            getAjax("../ajax_functions.php?disconnect=yes&case=" + ca + "&film=" + fi,
-                function(resp){
-                    handleJsonResp(resp);
-                    loadAll();
-                }
-            );
-        });
-        btn.innerHTML = "disconnect";
-        f.appendChild(btn);
-    });
-    target.appendChild(films_);
-}*/
 
 //this 2:nd version based on a new variant of the "get_all" query
 function updateIncludedFilms2(includedFilms){ //takes an array that should refer to one case and one or more films...
@@ -406,6 +390,31 @@ function offerDeleteCase(caseId){
     return deleteCaseBtn;
 }
 
+//the adding of 1-film-case - 'dialog'
+function makeAdd1FilmCaseButton(text){
+    var btn = document.createElement("input");
+    btn.type = "button";
+    btn.id = "add1FilmCaseButton";
+    btn.value = text;
+    btn.onclick = function(){
+        var ftitle = prompt("Ange film namn:", choosenName);
+        if(ftitle == null) return; //if cancel
+
+        var maxLengthT = DB_get1VarcharLength(fields_1);
+
+        console.log(maxLengthT);
+
+        shname = shortenName(ftitle, maxLengthT);
+
+
+        //var add_film = "yes";
+        var filmInfo = {add_1film_case:"yes", name:ftitle, short_name: shname};
+        postAjax("../ajax_functions.php", filmInfo, function(resp){handleJsonResp(resp)});
+        //TODO: add film if needed and a case, using (shortened) title...
+    }
+    return btn;
+}
+
 
 
 function renderAddNameForm(target, caseid, placeholder){
@@ -415,7 +424,7 @@ function renderAddNameForm(target, caseid, placeholder){
     var hints = document.createElement("div");
     hints.id = "hints";
     target.appendChild(hints);
-    setTimeout(addNameAjaxSearch(document.querySelector("#film_name")),100);
+    setTimeout(addNameAjaxSearch(document.querySelector("#film_name"), "#hints", "#film_name"),100);
 
     //submit button
     var submitBtn = makeAddFilmButton("Lägg till film");
@@ -426,6 +435,26 @@ function renderAddNameForm(target, caseid, placeholder){
         document.querySelector("#addFilmButton").click();
 
     })
+}
+
+function renderAdd1DiscCaseForm(target, placeholder){
+    var f = document.createElement("form");
+    f.innerHTML="<input id='film_name2' type='text' placeholder='"+placeholder+"' autofocus autocomplete='off'>";
+    target.appendChild(f);
+    var hints = document.createElement("div");
+    hints.id = "hints2";
+    target.appendChild(hints);
+    setTimeout(addNameAjaxSearch(document.querySelector("#film_name2"), "#hints2", "#film_name2"),100);
+
+    //submit button
+    var submitBtn = makeAdd1FilmCaseButton("Add 1-disc-film");
+    submitBtn.id = "add1DiscFilm";
+    f.appendChild(submitBtn); //#add1DiscFilm
+    f.addEventListener("submit", function(ev){
+        ev.preventDefault();
+        document.querySelector("#add1DiscFilm").click();
+
+    });
 }
 
 function handleJsonResp(resp){
@@ -440,7 +469,7 @@ function handleJsonResp(resp){
     }
 }
 
-function addNameAjaxSearch(elem){
+function addNameAjaxSearch(elem, hintsTargetQuerySelector, filmNameQuerySelector){
     elem.addEventListener("keyup", function(){
         //console.log(this);
         choosenName = this.value;
@@ -450,12 +479,15 @@ function addNameAjaxSearch(elem){
 
         getAjax("../ajax_functions.php?names=yes&string=" + val, function(resp){
             console.log(resp);
-            presentHints(document.querySelector("#hints"), JSON.parse(resp));
+            presentHints(document.querySelector(hintsTargetQuerySelector), JSON.parse(resp), filmNameQuerySelector);
         });
     });
 }
 
-function presentHints(target, hints){
+function presentHints(target, hints, filmNameQuerySelector){
+    if(target == null){
+        return false;
+    }
     target.innerHTML = "";//clear and list if any
     console.log(hints);
     hints.forEach(elem =>{
@@ -465,9 +497,9 @@ function presentHints(target, hints){
         target.appendChild(hint);
 
         hint.addEventListener("click", function(){
-            document.querySelector("#film_name").value = hint.innerHTML;
+            document.querySelector(filmNameQuerySelector).value = hint.innerHTML;
             choosenName = hint.innerHTML;
-            var fna = document.querySelector("#film_name");
+            var fna = document.querySelector(filmNameQuerySelector);
             if(fna) fna.focus();
         })
     });
@@ -547,12 +579,26 @@ function printAdminMenu(target, delay){
 
 
     //TODO: link5; to offer a fast way to insert case/film/film_title, initially for case with one film in it, asking "Enter film title"
+    var link5 = document.createElement("a");
+    link5.href = "#";
+    link5.innerHTML = "Add 1-disc-case";
+    link5.id = "alink5";
 
+    link5.addEventListener("click", function(ev){
+        ev.preventDefault();
+        setTimeout(function(){
+            //ajaxFormFromFields(fields, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'Lägg till fodral');
+            renderAdd1DiscCaseForm(document.querySelector('.add'), 'abc')
+        }, delay);
+    });
 
     target.appendChild(link1);
     target.appendChild(link2);
     target.appendChild(link3);
     target.appendChild(link4);
+
+    //test
+    target.appendChild(link5);
 
 }
 
@@ -737,4 +783,241 @@ function replaceWithSelect(inputElem, data){
     pare.insertBefore(sel, inputElem);
     pare.removeChild(inputElem);
     sel.name = inputElem.name;
+}
+
+
+//text functions
+
+function shortenName(filmName, maxLen){
+    console.log("shortenName " + filmName + ", maxLen: " + maxLen);
+    if(typeof filmName !== "string"){
+        return null;
+    }
+    if(typeof maxLen !== "number"){
+        return null;
+    }
+
+    var tempName = "";
+
+    if(filmName.length <= maxLen){
+        tempName = replaceSpaceWithUnderscore(filmName).toLowerCase();
+        return tempName;
+    }
+    //else
+
+    tempName = replaceSpaceWithCamelCase(filmName);
+
+    if(tempName.length <= maxLen){
+        return tempName;
+    }
+    //else
+
+    tempName = removeVowelsUntil(tempName,maxLen,true);
+
+    if(tempName.length <= maxLen){
+        return tempName;
+    }
+    //else
+
+    //Hmm, ("Sagan om ringen", 4) becomes "sgnO", well
+
+    tempName = removeVowelsUntil(tempName,maxLen,false);
+
+    if(tempName.length <= maxLen){
+        return tempName;
+    }
+    //else
+
+    tempName = tempName.substring(0, maxLen);
+    return tempName;
+
+
+}
+
+function replaceSpaceWithUnderscore(text){
+    return text.replace(" ", "_");
+}
+
+function replaceSpaceWithCamelCase(text, sadCamel){
+    if(typeof sadCamel == "undefined"){
+        sadCamel = true;
+    }
+
+    var pieces = text.split(" ");
+
+    var newText = "";
+    if(pieces.length > 1){
+        var count = 0;
+        pieces.forEach(element => {
+            var newW = "";//a word?
+            if(count == 0){ // first word
+                if(sadCamel){
+                    newW = element.substring(0,1).toLowerCase();
+                    newW += element.substring(1).toLowerCase();
+                }
+                else{
+                    newW = element.substring(0,1).toUpperCase();
+                    newW += element.substring(1).toLowerCase();
+                }
+            }
+            else{
+                newW = element.substring(0,1).toUpperCase();
+                newW += element.substring(1).toLowerCase();
+            }
+            newText += newW;
+            count++;
+        });
+    }
+    return newText;
+}
+
+function removeVowelsUntil(text, maxLengthWanted, spareCapitalL){
+
+    console.log("removeVowelsUntil");
+
+    if(typeof spareCapitalL == "undefined"){
+        spareCapitalL = false;
+    }
+    else{
+        spareCapitalL = true;
+    }
+
+    if(typeof text !== "string"){
+        return false;
+    }
+
+    if(typeof maxLengthWanted == "undefined" || maxLengthWanted == 0){
+        console.log("maxLengthW undefined");
+        //remove all vowels
+        var tempText = text;
+
+        var temp = tempText;
+        do{
+            temp = tempText;
+            if(!spareCapitalL)
+                tempText = removeLastVowel(tempText);
+            else
+                tempText = removeLastSmallVowel(tempText)
+        } while(temp != tempText);
+    }
+    else if(typeof maxLengthWanted == "number"){
+        console.log("maxLengthW " + maxLengthWanted);
+        var newLen = 10000;
+        var tempText = text;
+        var temp = tempText;
+
+        do{
+            console.log(newLen);
+            temp = tempText;
+            if(!spareCapitalL)
+                tempText = removeLastVowel(tempText);
+            else
+                tempText = removeLastSmallVowel(tempText);
+            newLen = tempText.length;
+        } while(newLen > maxLengthWanted && temp != tempText);
+    }
+    else{
+        return false;
+    }
+
+    return tempText;
+}
+
+function removeLastVowel(text){
+    var vowels = "aeiouyåäö";
+    var reversedLowered = reverseText(text.toLowerCase(), true); // true - get array
+    var asArray = stringToArray(text);
+
+    var len = reversedLowered.length;
+    var foundIndex = false;
+    var indexMirrored = 0;
+
+    for(var i=0; i<len; i++){
+        if(vowels.includes(reversedLowered[i])){
+            //var removed = reversed.splice(i,1);
+            console.log("includes");
+            foundIndex = i;
+            indexMirrored = len - i;
+            break;
+        }
+    }
+
+    console.log(foundIndex);
+
+    if(foundIndex !== false){
+        var removed = asArray.splice(indexMirrored-1,1);
+        console.log(removed);
+    }
+    else{
+        console.log("no last vowel found");
+    }
+
+    return asArray.join("");
+}
+
+function removeLastSmallVowel(text){
+    var vowels = "aeiouyåäö";
+    var reversed = reverseText(text, true); // true - get array
+    var asArray = stringToArray(text);
+
+    var len = reversed.length;
+    var foundIndex = false;
+    var indexMirrored = 0;
+
+    for(var i=0; i<len; i++){
+        if(vowels.includes(reversed[i])){
+            //var removed = reversed.splice(i,1);
+            console.log("includes");
+            foundIndex = i;
+            indexMirrored = len - i;
+            break;
+        }
+    }
+
+    console.log(foundIndex);
+
+    if(foundIndex !== false){
+        var removed = asArray.splice(indexMirrored-1,1);
+        console.log(removed);
+    }
+    else{
+        console.log("no last vowel found");
+    }
+
+    return asArray.join("");
+}
+
+function reverseText(text, returnAsArray){
+    var newArray = stringToArray(text);
+    newArray = newArray.reverse();
+
+    if(typeof returnAsArray != "undefined"){
+        if(returnAsArray === true){
+            return newArray;
+            //end
+        }
+    }
+
+    var newText = "";
+
+    newArray.forEach(element => {
+        newText += element;
+    });
+
+    return newText;
+}
+
+function stringToArray(text){
+    var newArray = [];
+
+    var len = text.length;
+
+    var tempText = text; // todo: check type
+
+    for(var i = 0; i<len; i++){
+        newArray.push(tempText.substring(0,1));
+        tempText = tempText.substring(1);
+    }
+
+    return newArray;
 }

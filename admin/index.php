@@ -71,6 +71,7 @@ function loadAll(findCaseId){
     console.log("loadAll...");
 
     selectedCase = allCases = choosenName = null;
+    //note: allCases, choosenName are global variables
     document.querySelector("#caseInfo").innerHTML = "";
     document.querySelector("#includedFilms").innerHTML = "";
     document.querySelector("#adminMenu").innerHTML = "";

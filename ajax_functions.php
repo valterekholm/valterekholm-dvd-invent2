@@ -180,15 +180,81 @@ if(!empty($_POST["add_case"]) && !empty($_POST["name"]) && !empty($_POST["locati
     }
 }
 
+//add/use film-title and connect it to a case (through a 'film') 
 if(!empty($_POST["add_film"]) && !empty($_POST["case_id"]) && !empty($_POST["name"])){
     $case_id = $_POST["case_id"];
     $name = $_POST["name"];
 
-    $name = str_replace("'s","´s",$name); // for some filmns like ocean's eleven
+    $name = str_replace("'s","´s",$name); // for some films like ocean's eleven
     //echo "--- $case_id : $name ---";
 
     //is allready stored?
     $table_name = "film_title";
+
+    $sql_name_is = "SELECT * FROM $table_name WHERE name = '$name'";
+    error_log($sql_name_is);
+    $res_name_is = $db->select_query($sql_name_is, false);
+    $found_id = null;
+    if($res_name_is->rowCount()>0){
+        $row_name_is = $res_name_is->fetch();
+        $found_id = $row_name_is["id"];
+        $film_id = $row_name_is["film_id"];
+        //echo "found name $found_id $film_id";
+
+        //insert a 'connectyrow' between the supplied case-id and the found-existing film/filmname
+        $sql_connect_film_case = "INSERT INTO case_film VALUES(?,?)";
+        error_log($sql_connect_film_case);
+        $values = array($case_id, $film_id);
+        $count_connect_film_case = $db->insert_query($sql_connect_film_case, $values,false);
+        if($count_connect_film_case>0){
+            $resp = makeJsonRespons(true, "Satte ihop fodral/film/namn", $count_connect_film_case);
+        }
+    }
+    else{
+        $values = array(substr($name,0,11));
+        $sql_film = "INSERT INTO film (f_short_name) VALUES (?)";
+        error_log($sql_film);
+        $count_res_film = $db->insert_query($sql_film, $values, false);
+        $lastInsertId = $db->getLastInsertId();
+        if($count_res_film>0){
+            $sql_name = "INSERT INTO film_title (`name`, film_id) VALUES(?,?)";
+            error_log($sql_name);
+            $count_res_name = $db->insert_query($sql_name, array($name, $lastInsertId));
+            if($count_res_name > 0){
+                //now have film and name
+                //insert a connectyrow
+                $sql_connect_film_case = "INSERT INTO case_film VALUES(?,?)";
+                error_log($sql_connect_film_case);
+                $values = array($case_id, $lastInsertId);
+                $count_connect_film_case = $db->insert_query($sql_connect_film_case, $values,false);
+                if($count_connect_film_case>0){
+                    $resp = makeJsonRespons(true, "Satte ihop fodral/film/namn", $count_connect_film_case);
+                }
+
+            }
+        }
+        else{
+            $resp = makeJsonRespons(false,"Kunde ej spara film/namn",0);
+        }
+    }
+    echo $resp;
+
+}
+
+//add 1film-case step-1
+if(!empty($_POST["add_1film_case"]) && !empty($_POST["name"]) && !empty($_POST["short_name"])){
+    $name = $_POST["name"];
+
+    $name = str_replace("'s","´s",$name); // for some films like ocean's eleven
+    //echo "--- $case_id : $name ---";
+
+    $short_name = $_POST["short_name"];
+
+    //is allready stored?
+    $table_name = "film_title";
+
+    echo  makeJsonRespons(false,"testing $name, $short_name", 0);
+    return;
 
     $sql_name_is = "SELECT * FROM $table_name WHERE name = '$name'";
     error_log($sql_name_is);

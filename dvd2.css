@@ -52,6 +52,11 @@ div.add{
     background-color:#ddd;
 }
 
+div.add form{
+    display: inline-block;
+    width: 49%;
+}
+
 div#cases{
     padding: 20px;
 }
@@ -122,6 +127,8 @@ div#cases{
     width: 20%;
     height: 100%;
     display: inline-block;
+    position: fixed;
+    top: 0;
 }
 #leftSide{
     width:79%;
@@ -143,6 +150,7 @@ div#cases{
     border-bottom: none;
     background-color: lightgray;
     position: relative;
+    padding-bottom: 23px;
 }
 #caseInfo::before{
     content: "case info";
