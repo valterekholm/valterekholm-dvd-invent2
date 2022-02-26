@@ -410,6 +410,7 @@ function makeAdd1FilmCaseButton(text, newId){
         shname = shortenName(ftitle, maxLengthT);
 
         var filmInfo = {add_1film_case:"yes", name:ftitle, short_name: shname, location: location};
+        console.log(filmInfo);
         postAjax("../ajax_functions.php", filmInfo, function(resp){
             handleJsonResp(resp, true);
         });
@@ -476,6 +477,7 @@ function renderAdd1DiscCaseForm(target, placeholder, id){
 }
 
 function handleJsonResp(resp, doAlertInfo){
+    console.log("handleJsonResp");
     console.log(resp);
 
     if(typeof doAlertInfo != "undefined" && doAlertInfo == true){
@@ -833,7 +835,7 @@ function shortenName(filmName, maxLen){
         return tempName;
     }
     //else
-
+    console.log("a");
     tempName = replaceSpaceWithCamelCase(filmName);
 
     if(tempName.length <= maxLen){
@@ -841,6 +843,7 @@ function shortenName(filmName, maxLen){
     }
     //else
 
+    console.log("b");
     tempName = removeVowelsUntil(tempName,maxLen,true);
 
     if(tempName.length <= maxLen){
@@ -850,6 +853,7 @@ function shortenName(filmName, maxLen){
 
     //Hmm, ("Sagan om ringen", 4) becomes "sgnO", well
 
+    console.log("c");
     tempName = removeVowelsUntil(tempName,maxLen,false);
 
     if(tempName.length <= maxLen){
@@ -857,6 +861,7 @@ function shortenName(filmName, maxLen){
     }
     //else
 
+    console.log("d");
     tempName = tempName.substring(0, maxLen);
     return tempName;
 
@@ -868,16 +873,21 @@ function replaceSpaceWithUnderscore(text){
 }
 
 function replaceSpaceWithCamelCase(text, sadCamel){
+    console.log("replaceSpaceWithCamelCase");
     if(typeof sadCamel == "undefined"){
         sadCamel = true;
     }
 
     var pieces = text.split(" ");
 
+    //console.log("pieces");
+    //console.log(pieces);
+
     var newText = "";
     if(pieces.length > 1){
         var count = 0;
         pieces.forEach(element => {
+            //console.log(count);
             var newW = "";//a word?
             if(count == 0){ // first word
                 if(sadCamel){
@@ -896,6 +906,9 @@ function replaceSpaceWithCamelCase(text, sadCamel){
             newText += newW;
             count++;
         });
+    }
+    else{
+        newText = pieces[0];
     }
     return newText;
 }

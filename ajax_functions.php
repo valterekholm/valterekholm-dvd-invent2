@@ -247,6 +247,8 @@ if(!empty($_POST["add_film"]) && !empty($_POST["case_id"]) && !empty($_POST["nam
 //add 1film-case step-1
 if(!empty($_POST["add_1film_case"]) && !empty($_POST["name"]) && !empty($_POST["short_name"])){
 
+    error_log("add_1film_case");
+
     if(empty($_POST["location"])){
         echo makeJsonRespons(false,"Location is missing!", 0);
         return;
@@ -257,14 +259,15 @@ if(!empty($_POST["add_1film_case"]) && !empty($_POST["name"]) && !empty($_POST["
     $name = str_replace("'s","´s",$name); // for some films like ocean's eleven
     //echo "--- $case_id : $name ---";
 
-    $short_name = urldecode($_POST["short_name"]);
+    $short_name = ($_POST["short_name"]);
 
-    $location = urldecode($_POST["location"]);
+    $location = ($_POST["location"]);
 
     //make the case
     $case_table_name = "case";
     $sql_add_case = "INSERT INTO `$case_table_name` (c_short_name, `location`) VALUES (?,?)";
     $values = array($short_name, $location);
+    error_log("values: " . print_r($values,true));
     $rowcount_add_case = $db->insert_query($sql_add_case, $values, false);
 
     if($rowcount_add_case == 0){
