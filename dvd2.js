@@ -217,3 +217,10 @@ function searchById(id, cases){
     }
     return false;
 }
+
+function appendHtmlRaw(elem, rawHtml){
+    var pTemp = document.createElement("p");
+    pTemp.innerHTML = rawHtml;
+
+    elem.innerHTML = elem.innerHTML + pTemp.innerHTML;
+}

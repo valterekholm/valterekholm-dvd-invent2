@@ -81,6 +81,7 @@ class db
 
 	//sql - a query with positional placeholders "?,?,?"
 	//values an indexed array
+	//returns row count
 	function insert_query($sql, $values = array(), $force_lower_case = true)
 	{
 		error_log("insert_query($sql)");

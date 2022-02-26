@@ -63,9 +63,18 @@ window.addEventListener("load", function(){
         if(document.querySelector("input") !== null)
             document.querySelector("input").focus();
     },1100);
-
 });
 
+document.body.onscroll = function(evt){
+    //if(this.scrollY > 60) alert("hej");
+    var bh = document.querySelector("#banner").getBoundingClientRect().height;
+    if(this.scrollY > bh){
+        document.body.className = "scrolledDown"; //to adjust #rightSide
+    }
+    else{
+        document.body.className = "";
+    }
+};
 
 function loadAll(findCaseId){
     console.log("loadAll...");
@@ -88,6 +97,7 @@ function loadAll(findCaseId){
                     ?>
 
                 document.querySelector("#alink1").click();//adminlink 1, 'case', to start input of new case
+                document.querySelector("#alink5").click();//adminlink 5, '1-disc-case', to start input of new 1-disc-case
                     <?php
                 }
                 ?>
@@ -132,6 +142,8 @@ function loadAll(findCaseId){
 
 //$sql_desc = "DESCRIBE $table_name";
 //$res_desc = $db->select_query($sql_desc);
+//this requires root access to mysql/mariadb, for alternative, use fields_1, fields_2, fields_3 (from database_structure.js) instead of fields,fields2,fields3
+//and comment out the following 3 lines:
 use_table_description($db, $table_name, "fields");
 use_table_description($db, $table_name3, "fields3");
 use_table_description($db, $table_name2, "fields2");
@@ -323,6 +335,16 @@ $rows_dvds = $res_dvds->fetchAll();
 </div>
 
 <div id="cases"></div>
+<?php
+$sql_inventory_info = "SELECT * FROM `inventory_info`";
+
+$res_inventory_info = $db->select_query($sql_inventory_info);
+
+if($res_inventory_info->rowCount() != 1){
+    offerInventoryInfoForm();
+}
+
+?>
 </body>
 </html>
 

@@ -30,6 +30,12 @@ error_reporting(E_ALL);
 
 $media_files_dir = "media";
 
+$res_od = opendir($media_files_dir);
+if(!$res_od){
+    echo "<b>Error: the code requires a folder named '$media_files_dir'</b>";
+}
+closedir($res_od);
+
 $db = new db($conn_vals);
 
 $sql_orderby = "";
@@ -63,21 +69,25 @@ $sql_inventory_info = "SELECT * FROM `inventory_info`";
 
 $res_inventory_info = $db->select_query($sql_inventory_info);
 
-$row_inventory_info = $res_inventory_info->fetch();
-
-echo "Contact info:" . $row_inventory_info["inventory_contact_info"];
-echo "<br>";
-$filename = $row_inventory_info["inventory_image_file"];
-$useBase64 = $row_inventory_info["images_as_base64"];
-
-if($useBase64 == 1){
-    printBase64Image($media_files_dir, $filename);
+if($res_inventory_info->rowCount() != 1){
+    //exit(1);//stop rendering
 }
 else{
-    echo "<img src='$media_files_dir/$filename'><br>";
+    $row_inventory_info = $res_inventory_info->fetch();
+
+    echo "Contact info:" . $row_inventory_info["inventory_contact_info"];
+    echo "<br>";
+    $filename = $row_inventory_info["inventory_image_file"];
+    $useBase64 = $row_inventory_info["images_as_base64"];
+
+    if($useBase64 == 1){
+        printBase64Image($media_files_dir, $filename);
+    }
+    else{
+        echo "<img src='$media_files_dir/$filename'><br>";
+    }
+
 }
-
-
 ?>
 <!--/pre--> <!-- 'pre' disables the word-wrap css function -->
 

@@ -127,3 +127,19 @@ function use_table_description($db, $table_name, $js_elem){
 function admin_message($message){
     echo "<p class='admin_message'>$message</p>";
 }
+
+function offerInventoryInfoForm(){
+    echo "<form action='add_inventory_info.php' method='post'>";
+    echo "<h1>Please fill this missing info about the inventory</h1>";
+    echo "<label>use base64 image rendering (1=yes)</label><input type='number' name='use_base64_image' value='1'><br>";
+    echo "<label>contact info</label>";
+    echo "<input type='text' name='contact_info'><br>";
+    echo "<label>image file</label>";
+    echo "<input type='text' name='image_file' placeholder='image1.jpg'><br>";
+    echo "<label>location</label>";
+    echo "<input type='text' name='inventory_location' placeholder='country...'><br>";
+    echo "<label>name</label>";
+    echo "<input type='text' name='inventory_name' placeholder='abc'><br>";
+    echo "<input type='submit'><br>";
+    echo "</form>";
+}

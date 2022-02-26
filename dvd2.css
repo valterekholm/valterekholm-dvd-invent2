@@ -55,6 +55,7 @@ div.add{
 div.add form{
     display: inline-block;
     width: 49%;
+    vertical-align: top;
 }
 
 div#cases{
@@ -125,11 +126,17 @@ div#cases{
 }*/
 #rightSide{
     width: 20%;
-    height: 100%;
+    height: auto;
     display: inline-block;
     position: fixed;
+    top: 57px;
+    z-index: 2;
+}
+
+body.scrolledDown #rightSide{
     top: 0;
 }
+
 #leftSide{
     width:79%;
     height:100%;
@@ -141,6 +148,10 @@ div#cases{
 #leftSide > div{
     padding: 0 10px;
 }
+#rightSide > div{
+    background-color: rgba(180,180,180,.6);
+}
+
 #caseInfo{
     display: inline-block;
     width: 100%;
@@ -148,7 +159,7 @@ div#cases{
     max-height: 40%;
     border: 1px outset gray;
     border-bottom: none;
-    background-color: lightgray;
+    /*background-color: lightgray;*/
     position: relative;
     padding-bottom: 23px;
 }
@@ -169,7 +180,7 @@ div#cases{
     max-height: 40%;
     border: 1px outset gray;
     border-top: none;
-    background-color: lightgray;
+    /*background-color: lightgray;*/
 }
 #includedFilms>div{
     background-color: wheat;
@@ -194,7 +205,7 @@ div#cases{
     min-height: 50px;
     max-height: 40%;
     border: 1px outset gray;
-    background-color: lightgray;
+    /* background-color: lightgray */
 }
 #adminMenu::before{
     content: "Admin menu";
@@ -211,6 +222,7 @@ div#cases{
     padding: 3px;
     text-decoration: none;
     font-weight: bold;
+    background-color: rgba(180,180,180,.9);
 }
 #hints{
     float:right;

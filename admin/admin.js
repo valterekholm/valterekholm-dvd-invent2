@@ -81,7 +81,6 @@ function formFromFields(_fields, ignore, target, action, method, title, descript
     },500);
 }
 
-//TODO: make like previous but with ajax
 function ajaxFormFromFields(_fields, ignore, target, action, method, title, description, orderByAlpha){
     target.innerHTML = "";
     var fo = document.createElement("form");
@@ -391,13 +390,17 @@ function offerDeleteCase(caseId){
 }
 
 //the adding of 1-film-case - 'dialog'
-function makeAdd1FilmCaseButton(text){
+function makeAdd1FilmCaseButton(text, newId){
     var btn = document.createElement("input");
-    btn.type = "button";
-    btn.id = "add1FilmCaseButton";
+    btn.type = "submit";
+    btn.id = newId;
     btn.value = text;
-    btn.onclick = function(){
-        var ftitle = prompt("Ange film namn:", choosenName);
+    btn.onclick = function(evt){
+        evt.preventDefault();
+        //the "submit" event/function
+        var location = document.querySelector("#location2").value;
+
+        var ftitle = prompt(`Ange film namn (location ${location}):`, choosenName);
         if(ftitle == null) return; //if cancel
 
         var maxLengthT = DB_get1VarcharLength(fields_1);
@@ -406,11 +409,10 @@ function makeAdd1FilmCaseButton(text){
 
         shname = shortenName(ftitle, maxLengthT);
 
-
-        //var add_film = "yes";
-        var filmInfo = {add_1film_case:"yes", name:ftitle, short_name: shname};
-        postAjax("../ajax_functions.php", filmInfo, function(resp){handleJsonResp(resp)});
-        //TODO: add film if needed and a case, using (shortened) title...
+        var filmInfo = {add_1film_case:"yes", name:ftitle, short_name: shname, location: location};
+        postAjax("../ajax_functions.php", filmInfo, function(resp){
+            handleJsonResp(resp, true);
+        });
     }
     return btn;
 }
@@ -437,9 +439,25 @@ function renderAddNameForm(target, caseid, placeholder){
     })
 }
 
-function renderAdd1DiscCaseForm(target, placeholder){
+function renderAdd1DiscCaseForm(target, placeholder, id){
     var f = document.createElement("form");
-    f.innerHTML="<input id='film_name2' type='text' placeholder='"+placeholder+"' autofocus autocomplete='off'>";
+
+    f.id = id;
+
+    if(document.querySelector("#"+id)){
+        console.log("id " + id + " allready exist, ");
+        return;
+    }
+
+    var header = document.createElement("h1");
+    header.innerHTML = "Lägg till 1-disc-fodral"
+
+    f.appendChild(header);
+
+    //TODO: have imdb code also:
+    appendHtmlRaw(f, "<input id='film_name2' type='text' placeholder='"+placeholder+"' autofocus autocomplete='off'><input type='text' id='location2' placeholder='location'>");
+
+
     target.appendChild(f);
     var hints = document.createElement("div");
     hints.id = "hints2";
@@ -447,25 +465,33 @@ function renderAdd1DiscCaseForm(target, placeholder){
     setTimeout(addNameAjaxSearch(document.querySelector("#film_name2"), "#hints2", "#film_name2"),100);
 
     //submit button
-    var submitBtn = makeAdd1FilmCaseButton("Add 1-disc-film");
+    var addOneDiscSubmitId = "add1DiscFilm";
+    var submitBtn = makeAdd1FilmCaseButton("Add 1-disc-film", addOneDiscSubmitId);
     submitBtn.id = "add1DiscFilm";
     f.appendChild(submitBtn); //#add1DiscFilm
     f.addEventListener("submit", function(ev){
         ev.preventDefault();
-        document.querySelector("#add1DiscFilm").click();
-
+        document.querySelector("#"+addOneDiscSubmitId).click();
     });
 }
 
-function handleJsonResp(resp){
+function handleJsonResp(resp, doAlertInfo){
     console.log(resp);
+
+    if(typeof doAlertInfo != "undefined" && doAlertInfo == true){
+        alert(resp);
+    }
+    else{
+        doAlertInfo = false;
+    }
+
     resp = JSON.parse(resp);
     if(resp.success){
-        alert("OK");
+        if(!doAlertInfo) alert("OK");
         loadAll();
     }
     else{
-        alert(resp.message);
+        if(!doAlertInfo) alert(resp.message);
     }
 }
 
@@ -493,12 +519,15 @@ function presentHints(target, hints, filmNameQuerySelector){
     hints.forEach(elem =>{
         var hint = document.createElement("div");
         hint.className = "hint";
-        hint.innerHTML = elem.name;
-        target.appendChild(hint);
+        var tempName = document.createTextNode(elem.name);
+        hint.appendChild(tempName);
+        target.appendChild(hint);//problems with '&' sign
 
         hint.addEventListener("click", function(){
-            document.querySelector(filmNameQuerySelector).value = hint.innerHTML;
-            choosenName = hint.innerHTML;
+            //var och = "&";//38 `\x26`
+            //var cc = och.charCodeAt(0);//38
+            document.querySelector(filmNameQuerySelector).value = hint.innerText; //innerHTML would render '&' as '&amp;'
+            choosenName = hint.innerText;//TODO: make it without global variable
             var fna = document.querySelector(filmNameQuerySelector);
             if(fna) fna.focus();
         })
@@ -588,7 +617,7 @@ function printAdminMenu(target, delay){
         ev.preventDefault();
         setTimeout(function(){
             //ajaxFormFromFields(fields, ['insert_date', 'id'], document.querySelector('.add'), '../ajax_functions.php', 'post', 'Lägg till fodral');
-            renderAdd1DiscCaseForm(document.querySelector('.add'), 'abc')
+            renderAdd1DiscCaseForm(document.querySelector('.add'), 'Film title', "oneDiscForm")
         }, delay);
     });
 
@@ -1021,3 +1050,4 @@ function stringToArray(text){
 
     return newArray;
 }
+
